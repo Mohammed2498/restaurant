@@ -40,6 +40,7 @@ class TableController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate($this->rules());
         Table::create($request->all());
         return redirect()->route('admin.tables.index')
             ->with('success', 'Table Added Successfully');
@@ -53,7 +54,7 @@ class TableController extends Controller
      */
     public function show($id)
     {
-        //
+
     }
 
     /**
@@ -62,9 +63,10 @@ class TableController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Table $table)
     {
-        //
+        return view('admin.tables.edit',
+            ['table' => $table]);
     }
 
     /**
@@ -74,9 +76,12 @@ class TableController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Table $table)
     {
-        //
+        $request->validate($this->rules());
+        $table->update($request->all());
+        return redirect()->route('admin.tables.index')
+            ->with('success', 'Table Updated Successfully');
     }
 
     /**
@@ -85,8 +90,19 @@ class TableController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Table $table)
     {
-        //
+        $table->delete();
+        return redirect()->route('admin.tables.index')
+            ->with('success', 'Table Deleted Successfully');
+    }
+    public function rules()
+    {
+        return [
+            'name' => ['required'],
+            'guest_number' => ['required'],
+            'status' => ['required'],
+            'location' => ['required'],
+        ];
     }
 }

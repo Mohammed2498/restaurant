@@ -9,4 +9,8 @@ class Category extends Model
 {
     protected $table = 'categories';
     protected $fillable = ['name', 'description', 'image'];
+
+    public function menus(){
+        return $this->belongsToMany(Menu::class,'category_menu');
+    }
 }

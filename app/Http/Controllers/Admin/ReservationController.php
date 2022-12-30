@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Reservation;
+use App\Models\Table;
 use Illuminate\Http\Request;
 
 class ReservationController extends Controller
@@ -16,7 +17,7 @@ class ReservationController extends Controller
     public function index()
     {
         $reservations = Reservation::all();
-        return view('admin.reservations.index',['reservations'=>$reservations]);
+        return view('admin.reservations.index', ['reservations' => $reservations]);
     }
 
     /**
@@ -26,24 +27,29 @@ class ReservationController extends Controller
      */
     public function create()
     {
-
+        $reservation = new Reservation();
+        $tables = Table::all();
+        return view('admin.reservations.create',
+            ['reservation' => $reservation, 'tables' => $tables]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        Reservation::create($request->all());
+        return redirect()->route('admin.reservations.index')
+            ->with('success', 'Reservation Created Successfully');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -53,35 +59,40 @@ class ReservationController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
+ccccccccccccccccccc     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Reservation $reservation)
     {
-        //
+        $tables = Table::all();
+        return view('admin.reservations.edit',
+            ['reservation' => $reservation, 'tables' => $tables]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Reservation $reservation)
     {
-        //
+        $reservation->update($request->all());
+        return redirect()->route('admin.reservations.index')
+            ->with('success', 'Reservation Edited Successfully');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Reservation $reservation)
     {
-        //
+        $reservation->delete();
+        return redirect()->route('admin.reservations.index')
+            ->with('warning', 'Reservation Deleted Successfully');
     }
 }

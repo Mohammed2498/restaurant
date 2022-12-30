@@ -40,6 +40,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate($this->rules());
         $image = $request->file('image');
         $data = $request->all();
         if ($request->hasFile('image')) {
@@ -83,6 +84,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        $request->validate($this->rules());
         $data = $request->all();
         $image = $request->file('image');
         if ($request->hasFile('image')) {
@@ -110,5 +112,14 @@ class CategoryController extends Controller
         $category->delete();
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category Deleted successfully');
+    }
+
+    public function rules()
+    {
+        return [
+            'name' => ['required'],
+            'image' => ['required', 'image'],
+            'description' => ['required'],
+        ];
     }
 }
