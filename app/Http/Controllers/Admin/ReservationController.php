@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\TableStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Reservation;
 use App\Models\Table;
+use App\Rules\DateBetween;
+use App\Rules\TimeBetween;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ReservationController extends Controller
@@ -28,7 +32,7 @@ class ReservationController extends Controller
     public function create()
     {
         $reservation = new Reservation();
-        $tables = Table::all();
+        $tables = Table::where('status',TableStatus::Avalaiable)->get();
         return view('admin.reservations.create',
             ['reservation' => $reservation, 'tables' => $tables]);
     }
@@ -41,6 +45,18 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
+         $table = Table::findOrFail($request->table_id);
+        if ($request->guest_number > $table->guest_number) {
+            return back()->with('warning', 'Please choose the table base on guests.');
+        }
+        $request->validate($this->rules());
+//        $request_date = Carbon::parse($request->res_date);
+//        foreach ($table->reservations as $res) {
+//            if ($res->res_date->format('Y-m-d') == $request_date->format('Y-m-d')) {
+//                return back()->with('warning', 'This table is reserved for this date.');
+//            }
+//        }
+
         Reservation::create($request->all());
         return redirect()->route('admin.reservations.index')
             ->with('success', 'Reservation Created Successfully');
@@ -59,7 +75,7 @@ class ReservationController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-ccccccccccccccccccc     * @param int $id
+     * ccccccccccccccccccc     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit(Reservation $reservation)
@@ -78,6 +94,7 @@ ccccccccccccccccccc     * @param int $id
      */
     public function update(Request $request, Reservation $reservation)
     {
+        $request->validate($this->rules());
         $reservation->update($request->all());
         return redirect()->route('admin.reservations.index')
             ->with('success', 'Reservation Edited Successfully');
@@ -94,5 +111,18 @@ ccccccccccccccccccc     * @param int $id
         $reservation->delete();
         return redirect()->route('admin.reservations.index')
             ->with('warning', 'Reservation Deleted Successfully');
+    }
+
+    public function rules()
+    {
+        return [
+            'first_name' => ['required'],
+            'last_name' => ['required'],
+            'email' => ['required', 'email'],
+            'res_date' => ['required', 'date', new DateBetween(), new TimeBetween()],
+            'tel_number' => ['required'],
+            'table_id' => ['required'],
+            'guest_number' => ['required'],
+        ];
     }
 }

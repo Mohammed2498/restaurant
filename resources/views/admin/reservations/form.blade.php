@@ -41,7 +41,7 @@
 <div class="sm:col-span-6">
     <label for="res_date" class="block text-sm font-medium text-gray-700"> Reservation Date  </label>
     <div class="mt-1">
-        <input value="{{old('res_date',$reservation->res_date)}}" type="date" id="res_date" name="res_date"
+        <input value="{{old('res_date',$reservation->res_date)}}" type="datetime-local" id="res_date" name="res_date"
                class="block w-full appearance-none bg-white border border-gray-400 rounded-md py-2 px-3 text-base leading-normal transition duration-150 ease-in-out sm:text-sm sm:leading-5 @error('res_date') border-red-400 @enderror"/>
     </div>
     @error('res_date')
@@ -53,7 +53,7 @@
     <div class="mt-1">
         <select id="table_id" name="table_id" class="form-multiselect block w-full mt-1">
             @foreach ($tables as $table)
-                <option value="{{ $table->id }}"{{ old('table_id', $reservation->table_id) == $table->id ? 'selected' : '' }} >{{$table->name }}</option>
+                <option value="{{ $table->id }}"{{ old('table_id', $reservation->table_id) == $table->id ? 'selected' : '' }} >{{$table->name }} ({{$table->guest_number}})</option>
             @endforeach
         </select>
     </div>
