@@ -45,18 +45,20 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-         $table = Table::findOrFail($request->table_id);
+        //to force the user to store number of guests same as table size
+        $table = Table::findOrFail($request->table_id);
         if ($request->guest_number > $table->guest_number) {
             return back()->with('warning', 'Please choose the table base on guests.');
         }
-        $request->validate($this->rules());
-//        $request_date = Carbon::parse($request->res_date);
-//        foreach ($table->reservations as $res) {
-//            if ($res->res_date->format('Y-m-d') == $request_date->format('Y-m-d')) {
-//                return back()->with('warning', 'This table is reserved for this date.');
-//            }
-//        }
 
+        $request->validate($this->rules());
+        // to prevent the user to book same time stored for the table
+        $request_date = Carbon::parse($request->res_date);
+        foreach ($table->reservations as $res) {
+            if ($res->res_date->format('Y-m-d') == $request_date->format('Y-m-d')) {
+                return back()->with('warning', 'This table is reserved for this date.');
+            }
+        }
         Reservation::create($request->all());
         return redirect()->route('admin.reservations.index')
             ->with('success', 'Reservation Created Successfully');
@@ -81,10 +83,10 @@ class ReservationController extends Controller
     public function edit(Reservation $reservation)
     {
         $tables = Table::all();
+        $tables = Table::where('status',TableStatus::Avalaiable)->get();
         return view('admin.reservations.edit',
             ['reservation' => $reservation, 'tables' => $tables]);
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -94,7 +96,18 @@ class ReservationController extends Controller
      */
     public function update(Request $request, Reservation $reservation)
     {
+        $table = Table::findOrFail($request->table_id);
+        if ($request->guest_number > $table->guest_number) {
+            return back()->with('warning', 'Please choose the table base on guests.');
+        }
         $request->validate($this->rules());
+        // to prevent the user to book same time stored for the table
+        $request_date = Carbon::parse($request->res_date);
+        foreach ($table->reservations as $res) {
+            if ($res->res_date->format('Y-m-d') == $request_date->format('Y-m-d')) {
+                return back()->with('warning', 'This table is reserved for this date.');
+            }
+        }
         $reservation->update($request->all());
         return redirect()->route('admin.reservations.index')
             ->with('success', 'Reservation Edited Successfully');
@@ -120,7 +133,7 @@ class ReservationController extends Controller
             'last_name' => ['required'],
             'email' => ['required', 'email'],
             'res_date' => ['required', 'date', new DateBetween(), new TimeBetween()],
-            'tel_number' => ['required'],
+            'phone' => ['required'],
             'table_id' => ['required'],
             'guest_number' => ['required'],
         ];

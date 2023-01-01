@@ -39,10 +39,11 @@
     @enderror
 </div>
 <div class="sm:col-span-6">
-    <label for="res_date" class="block text-sm font-medium text-gray-700"> Reservation Date  </label>
+    <label for="res_date" class="block text-sm font-medium text-gray-700"> Reservation Date
+    </label>
     <div class="mt-1">
-        <input value="{{old('res_date',$reservation->res_date)}}" type="datetime-local" id="res_date" name="res_date"
-               class="block w-full appearance-none bg-white border border-gray-400 rounded-md py-2 px-3 text-base leading-normal transition duration-150 ease-in-out sm:text-sm sm:leading-5 @error('res_date') border-red-400 @enderror"/>
+        <input value="{{old('res_date',$reservation->res_date->format('Y-m-d\TH:i:s'))}}" type="datetime-local" id="res_date" name="res_date"
+               class="block w-full appearance-none bg-white border border-gray-400 rounded-md py-2 px-3 text-base leading-normal transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
     </div>
     @error('res_date')
     <div class="text-sm text-red-400">{{ $message }}</div>
@@ -72,7 +73,7 @@
     @enderror
 </div>
 <div class="mt-6 p-4">
-    <button type="submit"
+    <button
             class="px-4 py-2 bg-indigo-500 hover:bg-indigo-700 rounded-lg text-white">Store
     </button>
 </div>
