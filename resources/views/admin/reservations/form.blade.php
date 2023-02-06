@@ -42,7 +42,7 @@
     <label for="res_date" class="block text-sm font-medium text-gray-700"> Reservation Date
     </label>
     <div class="mt-1">
-        <input value="{{old('res_date',$reservation->res_date->format('Y-m-d\TH:i:s'))}}" type="datetime-local" id="res_date" name="res_date"
+        <input value="{{old('res_date',$reservation->res_date)}}" type="datetime-local" id="res_date" name="res_date"
                class="block w-full appearance-none bg-white border border-gray-400 rounded-md py-2 px-3 text-base leading-normal transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
     </div>
     @error('res_date')
